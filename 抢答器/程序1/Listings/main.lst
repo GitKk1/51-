@@ -1,0 +1,101 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              07/12/2024 18:44:56 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\SoftWare\Keil\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listing
+                    -s\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "intrins.h"
+   3          #include "Delay.h"
+   4          #include "Timer0.h"
+   5          #include "Seg7.h"
+   6          #include "PlJudge.h"
+   7          
+   8          sbit host=P2^5;
+   9          sbit OE_=P2^0;
+  10          sbit buzzer=P2^6;
+  11          
+  12          unsigned char Time;
+  13          
+  14          void main()
+  15          {       
+  16   1              unsigned char flag=0;//主持人按下按键标志
+  17   1              unsigned char num=0;
+  18   1              buzzer=0;
+  19   1              Timer_Init();//定时器初始化
+  20   1              
+  21   1              while(1)
+  22   1              {
+  23   2                      if(host==0)//开始抢答
+  24   2                      {
+  25   3                              flag=1;
+  26   3                              TR0 = 1;//启动定时器
+  27   3                              Time=15;//设置抢答时间
+  28   3                              OE_=0;//选手可以按下按键
+  29   3                      }
+  30   2                      
+  31   2                      if(flag==1)
+  32   2                      {
+  33   3                              pl_num_disp(num);//显示选手号码
+  34   3                              Rtime_disp(Time/10,Time%10,num);//显示抢答倒计时
+  35   3                              if(P1!=0xff)//选手开始抢答
+  36   3                              {
+  37   4                                      num=Judge();//获取选手号码
+  38   4                                      if(num)
+  39   4                                      {
+  40   5                                              OE_=1;//其他按键不能响应
+  41   5                                              Time=30;
+  42   5                                      }
+  43   4                              }
+  44   3                              
+  45   3                              if(Time==0)//计时结束
+  46   3                              {
+  47   4                                      flag=0;
+  48   4                                      TR0 = 0;        
+  49   4                                      Time=0;
+  50   4                                      num=0;
+  51   4                                      buzzer=0;
+  52   4                              }
+  53   3                      }
+  54   2              }
+C51 COMPILER V9.60.0.0   MAIN                                                              07/12/2024 18:44:56 PAGE 2   
+
+  55   1      }
+  56          
+  57          void Timer0_Rountine() interrupt 1  //延时一秒
+  58          {
+  59   1              static unsigned int T0count;
+  60   1              TH0=0xFC;
+  61   1              TL0=0x18;
+  62   1              TF0 = 0;
+  63   1              T0count++;
+  64   1              if(T0count==500)
+  65   1              {
+  66   2                      buzzer=0;
+  67   2              }
+  68   1      
+  69   1              if(T0count>=1000)
+  70   1              {
+  71   2                      Time--;
+  72   2                      T0count=0;      
+  73   2              }
+  74   1      
+  75   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    148    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

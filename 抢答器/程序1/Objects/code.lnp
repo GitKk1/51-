@@ -1,0 +1,8 @@
+".\Objects\STARTUP.obj",
+".\Objects\main.obj",
+".\Objects\Delay.obj",
+".\Objects\Timer0.obj",
+".\Objects\Seg7.obj",
+".\Objects\PlJudge.obj" 
+TO ".\Objects\code" 
+PRINT(".\Listings\code.m51")
